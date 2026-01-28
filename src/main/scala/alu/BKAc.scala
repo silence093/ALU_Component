@@ -1,4 +1,4 @@
-// Brent-Kung Adder
+// Brent-Kung Adder with carry
 
 package alu
 
@@ -6,11 +6,13 @@ import chisel3._
 import chisel3.util._
 import scala.math._
 
-class BKA(width:Int = 32) extends Module {
+class BKAc(width:Int = 32) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(width.W))
     val b = Input(UInt(width.W))
     val sum = Output(UInt(width.W))
+    val cin = Input(UInt(width.W))
+    val cout = Output(UInt(width.W))
   })
 
   val g = Wire(Vec(width, Bool()))
@@ -19,7 +21,8 @@ class BKA(width:Int = 32) extends Module {
   val sum = Wire(Vec(width, Bool()))
 
   io.sum := sum.asUInt
-  c(0) := 0.U
+  c(0) := io.cin
+  io.cout := c(width)
 
   val gp_gens = Seq.fill(width)(Module(new gp_gen()))
   for (i <- 0 until width) {
@@ -81,8 +84,8 @@ class BKA(width:Int = 32) extends Module {
   }
 
   // generate carry
-  for (i <- 1 to width)
-    c(i) := G(log2Ceil(width) * 2 - 1)(i - 1)
+  for (i <- 0 until width)
+    c(i + 1) := G(log2Ceil(width) * 2 - 1)(i)
 
   // generate sum
   for (i <- 0 until width)
@@ -92,6 +95,6 @@ class BKA(width:Int = 32) extends Module {
 //object top extends App {
 //
 //  val packageName = this.getClass.getPackage.getName
-//  emitVerilog(new BKA(16), Array("--target-dir", s"generated/$packageName"))
+//  emitVerilog(new BKAc(16), Array("--target-dir", s"generated/$packageName"))
 //  println("Done")
 //}

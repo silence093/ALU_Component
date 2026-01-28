@@ -1,17 +1,18 @@
-// Kogge-Stone Adder
+// Kogge-Stone Adder with carry
 
 package alu
 
 import chisel3._
 import chisel3.util._
-
 import scala.math._
 
-class KSA(width:Int = 32) extends Module {
+class KSAc(width:Int = 32) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(width.W))
     val b = Input(UInt(width.W))
     val sum = Output(UInt(width.W))
+    val cin = Input(UInt(width.W))
+    val cout = Output(UInt(width.W))
   })
 
   val g = Wire(Vec(width, Bool()))
@@ -20,7 +21,8 @@ class KSA(width:Int = 32) extends Module {
   val sum = Wire(Vec(width, Bool()))
 
   io.sum := sum.asUInt
-  c(0) := 0.U
+  c(0) := io.cin
+  io.cout := c(width)
 
   val gp_gens = Seq.fill(width)(Module(new gp_gen()))
   for (i <- 0 until width) {

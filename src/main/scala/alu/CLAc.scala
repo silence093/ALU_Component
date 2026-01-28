@@ -1,23 +1,26 @@
-// Carry-Lookahead Adder
+// Carry-Lookahead Adder with carry
 
 package alu
 
 import chisel3._
 
-class CLA(width:Int = 32) extends Module {
+class CLAc(width:Int = 32) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(width.W))
     val b = Input(UInt(width.W))
     val sum = Output(UInt(width.W))
+    val cin = Input(UInt(width.W))
+    val cout = Output(UInt(width.W))
   })
 
   val g = Wire(Vec(width, Bool()))
   val p = Wire(Vec(width, Bool()))
-  val c = Wire(Vec(width, Bool()))
+  val c = Wire(Vec(width + 1, Bool()))
   val sum = Wire(Vec(width, Bool()))
 
   io.sum := sum.asUInt
-  c(0) := 0.U
+  c(0) := io.cin
+  io.cout := c(width)
 
   for (i <- 0 until width) {
     val pg = Module(new gp_gen())
@@ -28,7 +31,7 @@ class CLA(width:Int = 32) extends Module {
   }
 
   // generate carry
-  for (i <- 1 until width) {
+  for (i <- 1 until width+1) {
     c(i) := g(i-1) | (c(i-1) & p(i-1))
   }
 

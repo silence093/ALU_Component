@@ -7,21 +7,21 @@ import org.scalatest.matchers.must.Matchers
 
 import scala.util.Random
 
-class KSATest extends AnyFreeSpec with Matchers with ChiselSim {
+class ComplementTest extends AnyFreeSpec with Matchers with ChiselSim {
 
   "Test" in {
     def toUInt(x: Int): Long = x & 0xFFFFFFFFL
 
-    simulate(new KSA(32)) { dut =>
+    simulate(new Complement(32)) { dut =>
       for (i <- 1 to 100) {
         val a = Random.nextInt()
-        val b = Random.nextInt()
-        val expect = a + b
+        //val b = Random.nextInt()
+        val expect = -a
         dut.io.a.poke(toUInt(a).U(32.W))
-        dut.io.b.poke(toUInt(b).U(32.W))
-        val sum = dut.io.sum.peek().litValue
-        println(s"Random test $i pass: $a + $b = $sum")
-        dut.io.sum.expect(toUInt(expect).U(32.W))
+        //dut.io.b.poke(toUInt(b).U(32.W))
+        val a_comp = dut.io.a_comp.peek().litValue
+        println(s"Random test $i pass: -$a = $a_comp")
+        dut.io.a_comp.expect(toUInt(expect).U(32.W))
         dut.clock.step()
       }
     }

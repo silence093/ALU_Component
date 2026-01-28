@@ -25,13 +25,13 @@ class compressor42(width: Int = 32) extends Module {
     val i1 = Input(UInt(width.W))
     val i2 = Input(UInt(width.W))
     val i3 = Input(UInt(width.W))
-    val o0 = Output(UInt((width + 1).W))
-    val o1 = Output(UInt((width + 1).W))
+    val o0 = Output(UInt(width.W))
+    val o1 = Output(UInt(width.W))
   })
 
   // the 4-2 compressor is a combination of 2 CSAs
-  val csa1 = Module(new CSA)
-  val csa2 = Module(new CSA)
+  val csa1 = Module(new CSA(width))
+  val csa2 = Module(new CSA(width))
   csa1.io.a := io.i0
   csa1.io.b := io.i1
   csa1.io.c := io.i2

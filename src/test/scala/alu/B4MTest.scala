@@ -21,8 +21,8 @@ class B4MTest extends AnyFreeSpec with Matchers with ChiselSim {
 
       for (i <- 0 to  9) {
         for (j <- 0 to 9) {
-          dut.io.in.bits.a.poke(i.asUInt)
-          dut.io.in.bits.b.poke(j.asUInt)
+          dut.io.in.bits.a.poke(i.U)
+          dut.io.in.bits.b.poke(j.U)
           val a = i
           val b = j
           dut.io.in.valid.poke(true)

@@ -1,14 +1,13 @@
-// Carry-Lookahead Adder
+// Based on CLA
 
 package alu
 
 import chisel3._
 
-class CLA(width:Int = 32) extends Module {
+class Complement(width:Int = 32) extends Module {
   val io = IO(new Bundle {
     val a = Input(UInt(width.W))
-    val b = Input(UInt(width.W))
-    val sum = Output(UInt(width.W))
+    val a_comp = Output(UInt(width.W))
   })
 
   val g = Wire(Vec(width, Bool()))
@@ -16,13 +15,13 @@ class CLA(width:Int = 32) extends Module {
   val c = Wire(Vec(width, Bool()))
   val sum = Wire(Vec(width, Bool()))
 
-  io.sum := sum.asUInt
-  c(0) := 0.U
+  io.a_comp := sum.asUInt
+  c(0) := 1.U(1.W)
 
   for (i <- 0 until width) {
     val pg = Module(new gp_gen())
-    pg.io.a := io.a(i)
-    pg.io.b := io.b(i)
+    pg.io.a := ~io.a(i)
+    pg.io.b := 0.U
     g(i) := pg.io.g
     p(i) := pg.io.p
   }
@@ -41,7 +40,7 @@ class CLA(width:Int = 32) extends Module {
 //object top extends App {
 //
 //  val packageName = this.getClass.getPackage.getName
-//  emitVerilog(new CLA(), Array("--target-dir", s"generated/$packageName"))
+//  emitVerilog(new Complement(), Array("--target-dir", s"generated/$packageName"))
 //
 //  println("Done")
 //}
